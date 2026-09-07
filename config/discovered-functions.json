@@ -1,0 +1,680 @@
+{
+  "main": [
+    {
+      "vram": "0x8002a080",
+      "prologue": "0x8002a080",
+      "previous_return": "0x8002a074",
+      "references": [
+        {
+          "lui_rom": "0x2ab34",
+          "low_rom": "0x2ab38"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8002aa10",
+      "prologue": "0x8002aa10",
+      "previous_return": "0x8002aa04",
+      "references": [
+        {
+          "lui_rom": "0x2ab50",
+          "low_rom": "0x2ab54"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8002c36c",
+      "prologue": "0x8002c36c",
+      "previous_return": "0x8002c364",
+      "references": [
+        {
+          "lui_rom": "0x2ced8",
+          "low_rom": "0x2cedc"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x800377bc",
+      "prologue": "0x800377bc",
+      "previous_return": "0x800377b4",
+      "references": [
+        {
+          "lui_rom": "0x39950",
+          "low_rom": "0x39954"
+        },
+        {
+          "lui_rom": "0x39c94",
+          "low_rom": "0x39c98"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8003eb30",
+      "prologue": "0x8003eb30",
+      "previous_return": "0x8003eb28",
+      "references": [
+        {
+          "lui_rom": "0x5ac70",
+          "low_rom": "0x5ac74"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x800409cc",
+      "prologue": "0x800409cc",
+      "previous_return": "0x800409c4",
+      "references": [
+        {
+          "lui_rom": "0x403b8",
+          "low_rom": "0x403c0"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8004ba80",
+      "prologue": "0x8004ba80",
+      "previous_return": "0x8004ba78",
+      "references": [
+        {
+          "lui_rom": "0x9ef84",
+          "low_rom": "0x9ef88"
+        },
+        {
+          "lui_rom": "0xa78a0",
+          "low_rom": "0xa78a4"
+        },
+        {
+          "lui_rom": "0xa95cc",
+          "low_rom": "0xa95d0"
+        },
+        {
+          "lui_rom": "0xaa8fc",
+          "low_rom": "0xaa900"
+        },
+        {
+          "lui_rom": "0xac3d8",
+          "low_rom": "0xac3dc"
+        },
+        {
+          "lui_rom": "0xadca4",
+          "low_rom": "0xadca8"
+        },
+        {
+          "lui_rom": "0xaec8c",
+          "low_rom": "0xaec90"
+        },
+        {
+          "lui_rom": "0xaf9ac",
+          "low_rom": "0xaf9b0"
+        },
+        {
+          "lui_rom": "0xb0c50",
+          "low_rom": "0xb0c54"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x800540d4",
+      "prologue": "0x800540d4",
+      "previous_return": "0x800540cc",
+      "references": [
+        {
+          "lui_rom": "0x56bc0",
+          "low_rom": "0x56bc4"
+        },
+        {
+          "lui_rom": "0x56bd8",
+          "low_rom": "0x56bdc"
+        },
+        {
+          "lui_rom": "0x56bf0",
+          "low_rom": "0x56bf4"
+        },
+        {
+          "lui_rom": "0x56c0c",
+          "low_rom": "0x56c14"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80055338",
+      "prologue": "0x80055338",
+      "previous_return": "0x80055330",
+      "references": [
+        {
+          "lui_rom": "0x56b90",
+          "low_rom": "0x56b94"
+        },
+        {
+          "lui_rom": "0x56ba8",
+          "low_rom": "0x56bac"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80057208",
+      "prologue": "0x80057208",
+      "previous_return": "0x80057200",
+      "references": [
+        {
+          "lui_rom": "0x56b60",
+          "low_rom": "0x56b64"
+        },
+        {
+          "lui_rom": "0x56b78",
+          "low_rom": "0x56b7c"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80057f80",
+      "prologue": "0x80057f80",
+      "previous_return": "0x80057f6c",
+      "references": [
+        {
+          "lui_rom": "0x5976c",
+          "low_rom": "0x59770"
+        },
+        {
+          "lui_rom": "0x597a8",
+          "low_rom": "0x597ac"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x800581f0",
+      "prologue": "0x800581f0",
+      "previous_return": "0x800581e8",
+      "references": [
+        {
+          "lui_rom": "0x59844",
+          "low_rom": "0x59848"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80058688",
+      "prologue": "0x80058688",
+      "previous_return": "0x80058680",
+      "references": [
+        {
+          "lui_rom": "0x59884",
+          "low_rom": "0x59888"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80060dc8",
+      "prologue": "0x80060dc8",
+      "previous_return": "0x80060dc0",
+      "references": [
+        {
+          "lui_rom": "0x61d2c",
+          "low_rom": "0x61d30"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80060f24",
+      "prologue": "0x80060f24",
+      "previous_return": "0x80060f1c",
+      "references": [
+        {
+          "lui_rom": "0x61d64",
+          "low_rom": "0x61d68"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x800615e0",
+      "prologue": "0x800615e0",
+      "previous_return": "0x800615d8",
+      "references": [
+        {
+          "lui_rom": "0x5aa14",
+          "low_rom": "0x5aa18"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80063d88",
+      "prologue": "0x80063d88",
+      "previous_return": "0x80063d80",
+      "references": [
+        {
+          "lui_rom": "0x64670",
+          "low_rom": "0x64680"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80064180",
+      "prologue": "0x80064180",
+      "previous_return": "0x80064178",
+      "references": [
+        {
+          "lui_rom": "0x67acc",
+          "low_rom": "0x67ad0"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80064770",
+      "prologue": "0x80064770",
+      "previous_return": "0x80064768",
+      "references": [
+        {
+          "lui_rom": "0x67bfc",
+          "low_rom": "0x67c00"
+        },
+        {
+          "lui_rom": "0x67d34",
+          "low_rom": "0x67d38"
+        },
+        {
+          "lui_rom": "0x67e6c",
+          "low_rom": "0x67e70"
+        },
+        {
+          "lui_rom": "0x67f1c",
+          "low_rom": "0x67f20"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80064b88",
+      "prologue": "0x80064b88",
+      "previous_return": "0x80064b80",
+      "references": [
+        {
+          "lui_rom": "0x68020",
+          "low_rom": "0x68024"
+        },
+        {
+          "lui_rom": "0x68168",
+          "low_rom": "0x6816c"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x800679c4",
+      "prologue": "0x800679c4",
+      "previous_return": "0x800679bc",
+      "references": [
+        {
+          "lui_rom": "0x69b98",
+          "low_rom": "0x69b9c"
+        },
+        {
+          "lui_rom": "0x6a1b8",
+          "low_rom": "0x6a1bc"
+        },
+        {
+          "lui_rom": "0x6cf58",
+          "low_rom": "0x6cf5c"
+        },
+        {
+          "lui_rom": "0x6cfcc",
+          "low_rom": "0x6cfd0"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80068c3c",
+      "prologue": "0x80068c3c",
+      "previous_return": "0x80068c34",
+      "references": [
+        {
+          "lui_rom": "0x6be28",
+          "low_rom": "0x6be2c"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80069844",
+      "prologue": "0x80069844",
+      "previous_return": "0x8006983c",
+      "references": [
+        {
+          "lui_rom": "0x6cce0",
+          "low_rom": "0x6cce4"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8006b714",
+      "prologue": "0x8006b714",
+      "previous_return": "0x8006b70c",
+      "references": [
+        {
+          "lui_rom": "0x6ca58",
+          "low_rom": "0x6ca5c"
+        },
+        {
+          "lui_rom": "0x6d14c",
+          "low_rom": "0x6d150"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8006c620",
+      "prologue": "0x8006c620",
+      "previous_return": "0x8006c618",
+      "references": [
+        {
+          "lui_rom": "0x5ac40",
+          "low_rom": "0x5ac44"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8006dd4c",
+      "prologue": "0x8006dd4c",
+      "previous_return": "0x8006dd44",
+      "references": [
+        {
+          "lui_rom": "0x6d6a0",
+          "low_rom": "0x6d6a8"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8006ddd0",
+      "prologue": "0x8006ddd0",
+      "previous_return": "0x8006ddc0",
+      "references": [
+        {
+          "lui_rom": "0x6f320",
+          "low_rom": "0x6f32c"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8006fa48",
+      "prologue": "0x8006fa48",
+      "previous_return": "0x8006fa40",
+      "references": [
+        {
+          "lui_rom": "0x5abc0",
+          "low_rom": "0x5abc4"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8007076c",
+      "prologue": "0x8007076c",
+      "previous_return": "0x80070764",
+      "references": [
+        {
+          "lui_rom": "0x72ee8",
+          "low_rom": "0x72eec"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80070df0",
+      "prologue": "0x80070df0",
+      "previous_return": "0x80070de4",
+      "references": [
+        {
+          "lui_rom": "0x75a6c",
+          "low_rom": "0x75a70"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80071040",
+      "prologue": "0x80071040",
+      "previous_return": "0x80071038",
+      "references": [
+        {
+          "lui_rom": "0x71b14",
+          "low_rom": "0x71b1c"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80071204",
+      "prologue": "0x80071204",
+      "previous_return": "0x800711fc",
+      "references": [
+        {
+          "lui_rom": "0x71b2c",
+          "low_rom": "0x71b34"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x800713c8",
+      "prologue": "0x800713c8",
+      "previous_return": "0x800713c0",
+      "references": [
+        {
+          "lui_rom": "0x71b38",
+          "low_rom": "0x71b3c"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80071500",
+      "prologue": "0x80071500",
+      "previous_return": "0x800714f8",
+      "references": [
+        {
+          "lui_rom": "0x71b20",
+          "low_rom": "0x71b28"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80071638",
+      "prologue": "0x80071638",
+      "previous_return": "0x80071630",
+      "references": [
+        {
+          "lui_rom": "0x71ba4",
+          "low_rom": "0x71ba8"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80073054",
+      "prologue": "0x80073054",
+      "previous_return": "0x8007304c",
+      "references": [
+        {
+          "lui_rom": "0x7440c",
+          "low_rom": "0x74410"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80073a80",
+      "prologue": "0x80073a80",
+      "previous_return": "0x80073a78",
+      "references": [
+        {
+          "lui_rom": "0x5ac14",
+          "low_rom": "0x5ac18"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80075ed0",
+      "prologue": "0x80075ed0",
+      "previous_return": "0x80075ec8",
+      "references": [
+        {
+          "lui_rom": "0x72b70",
+          "low_rom": "0x72b74"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80076648",
+      "prologue": "0x80076648",
+      "previous_return": "0x80076640",
+      "references": [
+        {
+          "lui_rom": "0x72d20",
+          "low_rom": "0x72d24"
+        },
+        {
+          "lui_rom": "0x72d60",
+          "low_rom": "0x72d64"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80076c7c",
+      "prologue": "0x80076c7c",
+      "previous_return": "0x80076c74",
+      "references": [
+        {
+          "lui_rom": "0x74940",
+          "low_rom": "0x74944"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80076da8",
+      "prologue": "0x80076da8",
+      "previous_return": "0x80076da0",
+      "references": [
+        {
+          "lui_rom": "0x76c20",
+          "low_rom": "0x76c24"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x80089a80",
+      "size": "0x10",
+      "previous_return": "0x80089a78",
+      "references": [
+        {
+          "lui_rom": "0x8a138",
+          "low_rom": "0x8a144"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and leaf_return"
+    },
+    {
+      "vram": "0x80089a90",
+      "size": "0x10",
+      "previous_return": "0x80089a88",
+      "references": [
+        {
+          "lui_rom": "0x8a388",
+          "low_rom": "0x8a38c"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and leaf_return"
+    },
+    {
+      "vram": "0x80089aa0",
+      "size": "0x10",
+      "previous_return": "0x80089a98",
+      "references": [
+        {
+          "lui_rom": "0x8a43c",
+          "low_rom": "0x8a440"
+        },
+        {
+          "lui_rom": "0x8a49c",
+          "low_rom": "0x8a4a0"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and leaf_return"
+    },
+    {
+      "vram": "0x80089ab0",
+      "size": "0x10",
+      "previous_return": "0x80089aa8",
+      "references": [
+        {
+          "lui_rom": "0x8a504",
+          "low_rom": "0x8a508"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and leaf_return"
+    },
+    {
+      "vram": "0x80089ac0",
+      "size": "0x10",
+      "previous_return": "0x80089ab8",
+      "references": [
+        {
+          "lui_rom": "0x8a5a8",
+          "low_rom": "0x8a5ac"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and leaf_return"
+    },
+    {
+      "vram": "0x8008fd4c",
+      "prologue": "0x8008fd4c",
+      "previous_return": "0x8008fd44",
+      "references": [
+        {
+          "lui_rom": "0x90344",
+          "low_rom": "0x90348"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    },
+    {
+      "vram": "0x8008fdd8",
+      "prologue": "0x8008fdd8",
+      "previous_return": "0x8008fdd0",
+      "references": [
+        {
+          "lui_rom": "0x8fda4",
+          "low_rom": "0x8fda8"
+        }
+      ],
+      "evidence": "Address construction plus preceding return and stack_frame"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+[[section]]
+name = ".main"
+rom = 0x1000
+vram = 0x80000400
+size = 0x95ce0
+functions = [
+  { name = "rs_adler32", vram = 0x80020b80, size = 0x1e8 },
+  { name = "rs_clear_memory", vram = 0x8000040c, size = 0x30 },
+  { name = "rs_load_overlay", vram = 0x800012d0, size = 0x170 },
+  { name = "rs_process_overlay_dma", vram = 0x80003ad0, size = 0x84 },
+  { name = "rs_memset", vram = 0x80007ff0, size = 0x28 },
+  { name = "rs_dma_read", vram = 0x80005930, size = 4 },
+  { name = "rs_invalidate_icache", vram = 0x80026140, size = 4 },
+  { name = "rs_invalidate_dcache", vram = 0x80026090, size = 4 },
+  { name = "rs_writeback_dcache_all", vram = 0x8002cc30, size = 4 },
+  { name = "rs_audio_feedback", vram = 0x80091994, size = 0xb4 },
+  { name = "rs_audio_cache_cursor", vram = 0x80095030, size = 0x20 },
+]

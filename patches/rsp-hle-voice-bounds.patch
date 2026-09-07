@@ -1,0 +1,199 @@
+diff --git a/src/memory.h b/src/memory.h
+index 9c85104..764da0f 100644
+--- a/src/memory.h
++++ b/src/memory.h
+@@ -136,50 +136,55 @@ static inline void dmem_store_u32(struct hle_t* hle, const uint32_t* src, uint16
+ }
+ 
+ /* convenient functions DRAM access */
++#ifdef ROGUE_NATIVE_GUARDS
++unsigned rs_hle_checked_dram(unsigned address, size_t bytes, unsigned alignment);
++#else
++static inline unsigned rs_hle_checked_dram(unsigned address, size_t bytes, unsigned alignment)
++{ (void)bytes; (void)alignment; return address & 0xffffff; }
++#endif
+ static inline uint8_t* dram_u8(struct hle_t* hle, uint32_t address)
+ {
+-    return u8(hle->dram, address & 0xffffff);
++    return u8(hle->dram, rs_hle_checked_dram(address,1,1));
+ }
+ 
+ static inline uint16_t* dram_u16(struct hle_t* hle, uint32_t address)
+ {
+-    return u16(hle->dram, address & 0xffffff);
++    return u16(hle->dram, rs_hle_checked_dram(address,2,2));
+ }
+ 
+ static inline uint32_t* dram_u32(struct hle_t* hle, uint32_t address)
+ {
+-    return u32(hle->dram, address & 0xffffff);
++    return u32(hle->dram, rs_hle_checked_dram(address,4,4));
+ }
+ 
+ static inline void dram_load_u8(struct hle_t* hle, uint8_t* dst, uint32_t address, size_t count)
+ {
+-    load_u8(dst, hle->dram, address & 0xffffff, count);
++    load_u8(dst, hle->dram, rs_hle_checked_dram(address,count,1), count);
+ }
+ 
+ static inline void dram_load_u16(struct hle_t* hle, uint16_t* dst, uint32_t address, size_t count)
+ {
+-    load_u16(dst, hle->dram, address & 0xffffff, count);
++    load_u16(dst, hle->dram, rs_hle_checked_dram(address,count*2,2), count);
+ }
+ 
+ static inline void dram_load_u32(struct hle_t* hle, uint32_t* dst, uint32_t address, size_t count)
+ {
+-    load_u32(dst, hle->dram, address & 0xffffff, count);
++    load_u32(dst, hle->dram, rs_hle_checked_dram(address,count*4,4), count);
+ }
+ 
+ static inline void dram_store_u8(struct hle_t* hle, const uint8_t* src, uint32_t address, size_t count)
+ {
+-    store_u8(hle->dram, address & 0xffffff, src, count);
++    store_u8(hle->dram, rs_hle_checked_dram(address,count,1), src, count);
+ }
+ 
+ static inline void dram_store_u16(struct hle_t* hle, const uint16_t* src, uint32_t address, size_t count)
+ {
+-    store_u16(hle->dram, address & 0xffffff, src, count);
++    store_u16(hle->dram, rs_hle_checked_dram(address,count*2,2), src, count);
+ }
+ 
+ static inline void dram_store_u32(struct hle_t* hle, const uint32_t* src, uint32_t address, size_t count)
+ {
+-    store_u32(hle->dram, address & 0xffffff, src, count);
++    store_u32(hle->dram, rs_hle_checked_dram(address,count*4,4), src, count);
+ }
+ 
+ #endif
+-
+diff --git a/src/musyx.c b/src/musyx.c
+index d5a630a..1f6dd75 100644
+--- a/src/musyx.c
++++ b/src/musyx.c
+@@ -31,6 +31,13 @@
+ #include "hle_internal.h"
+ #include "memory.h"
+ 
++#ifdef ROGUE_NATIVE_GUARDS
++extern void rs_hle_voice_error(const char*,unsigned) __attribute__((noreturn));
++#define VOICE_REQUIRE(test,reason,address) do { if(!(test))rs_hle_voice_error(reason,address); } while(0)
++#else
++#define VOICE_REQUIRE(test,reason,address) ((void)0)
++#endif
++
+ /* various constants */
+ enum { SUBFRAME_SIZE = 192 };
+ enum { MAX_VOICES = 32 };
+@@ -144,8 +151,8 @@ static void init_subframes_v2(musyx_t *musyx);
+ static uint32_t voice_stage(struct hle_t* hle, musyx_t *musyx,
+                             uint32_t voice_ptr, uint32_t last_sample_ptr);
+ 
+-static void dma_cat8(struct hle_t* hle, uint8_t *dst, uint32_t catsrc_ptr);
+-static void dma_cat16(struct hle_t* hle, uint16_t *dst, uint32_t catsrc_ptr);
++static void dma_cat8(struct hle_t* hle, uint8_t *dst, uint32_t catsrc_ptr, size_t capacity);
++static void dma_cat16(struct hle_t* hle, uint16_t *dst, uint32_t catsrc_ptr, size_t capacity);
+ 
+ static void load_samples_PCM16(struct hle_t* hle, uint32_t voice_ptr, int16_t *samples,
+                                unsigned *segbase, unsigned *offset);
+@@ -469,6 +476,7 @@ static uint32_t voice_stage(struct hle_t* hle, musyx_t *musyx,
+     } else {
+         /* otherwise process voices until a non null output_ptr is encountered */
+         for (;;) {
++            VOICE_REQUIRE(i<MAX_VOICES,"musyx_voice_list_overrun",voice_ptr);
+             /* load voice samples (PCM16 or APDCM) */
+             int16_t samples[SAMPLE_BUFFER_SIZE];
+             unsigned segbase;
+@@ -499,7 +507,7 @@ static uint32_t voice_stage(struct hle_t* hle, musyx_t *musyx,
+     return output_ptr;
+ }
+ 
+-static void dma_cat8(struct hle_t* hle, uint8_t *dst, uint32_t catsrc_ptr)
++static void dma_cat8(struct hle_t* hle, uint8_t *dst, uint32_t catsrc_ptr, size_t capacity)
+ {
+     uint32_t ptr1  = *dram_u32(hle, catsrc_ptr + CATSRC_PTR1);
+     uint32_t ptr2  = *dram_u32(hle, catsrc_ptr + CATSRC_PTR2);
+@@ -508,6 +516,7 @@ static void dma_cat8(struct hle_t* hle, uint8_t *dst, uint32_t catsrc_ptr)
+ 
+     size_t count1 = size1;
+     size_t count2 = size2;
++    VOICE_REQUIRE(count1+count2<=capacity,"musyx_adpcm_copy_overrun",catsrc_ptr);
+ 
+     HleVerboseMessage(hle->user_defined,
+                       "dma_cat: %08x %08x %04x %04x",
+@@ -524,7 +533,7 @@ static void dma_cat8(struct hle_t* hle, uint8_t *dst, uint32_t catsrc_ptr)
+     dram_load_u8(hle, dst + count1, ptr2, count2);
+ }
+ 
+-static void dma_cat16(struct hle_t* hle, uint16_t *dst, uint32_t catsrc_ptr)
++static void dma_cat16(struct hle_t* hle, uint16_t *dst, uint32_t catsrc_ptr, size_t capacity)
+ {
+     uint32_t ptr1  = *dram_u32(hle, catsrc_ptr + CATSRC_PTR1);
+     uint32_t ptr2  = *dram_u32(hle, catsrc_ptr + CATSRC_PTR2);
+@@ -533,6 +542,7 @@ static void dma_cat16(struct hle_t* hle, uint16_t *dst, uint32_t catsrc_ptr)
+ 
+     size_t count1 = size1 >> 1;
+     size_t count2 = size2 >> 1;
++    VOICE_REQUIRE(count1+count2<=capacity,"musyx_pcm_copy_overrun",catsrc_ptr);
+ 
+     HleVerboseMessage(hle->user_defined,
+                       "dma_cat: %08x %08x %04x %04x",
+@@ -558,16 +568,17 @@ static void load_samples_PCM16(struct hle_t* hle, uint32_t voice_ptr, int16_t *s
+     uint16_t u16_42 = *dram_u16(hle, voice_ptr + VOICE_U16_42);
+ 
+     unsigned count = align(u16_40 + u8_3e, 4);
++    VOICE_REQUIRE(count<=SAMPLE_BUFFER_SIZE,"musyx_pcm_sample_extent",voice_ptr);
+ 
+     HleVerboseMessage(hle->user_defined, "Format: PCM16");
+ 
+     *segbase = SAMPLE_BUFFER_SIZE - count;
+     *offset  = u8_3e;
+ 
+-    dma_cat16(hle, (uint16_t *)samples + *segbase, voice_ptr + VOICE_CATSRC_0);
++    dma_cat16(hle, (uint16_t *)samples + *segbase, voice_ptr + VOICE_CATSRC_0, count);
+ 
+     if (u16_42 != 0)
+-        dma_cat16(hle, (uint16_t *)samples, voice_ptr + VOICE_CATSRC_1);
++        dma_cat16(hle, (uint16_t *)samples, voice_ptr + VOICE_CATSRC_1, SAMPLE_BUFFER_SIZE);
+ }
+ 
+ static void load_samples_ADPCM(struct hle_t* hle, uint32_t voice_ptr, int16_t *samples,
+@@ -584,6 +595,7 @@ static void load_samples_ADPCM(struct hle_t* hle, uint32_t voice_ptr, int16_t *s
+     uint8_t u8_3f = *dram_u8(hle, voice_ptr + VOICE_SKIP_SAMPLES + 1);
+     uint32_t adpcm_table_ptr = *dram_u32(hle, voice_ptr + VOICE_ADPCM_TABLE_PTR);
+     unsigned count;
++    VOICE_REQUIRE(u8_3c<=SAMPLE_BUFFER_SIZE/32 && u8_3d<=SAMPLE_BUFFER_SIZE/32,"musyx_adpcm_sample_extent",voice_ptr);
+ 
+     HleVerboseMessage(hle->user_defined, "Format: ADPCM");
+ 
+@@ -595,11 +607,11 @@ static void load_samples_ADPCM(struct hle_t* hle, uint32_t voice_ptr, int16_t *s
+     *segbase = SAMPLE_BUFFER_SIZE - count;
+     *offset  = u8_3e & 0x1f;
+ 
+-    dma_cat8(hle, buffer, voice_ptr + VOICE_CATSRC_0);
++    dma_cat8(hle, buffer, voice_ptr + VOICE_CATSRC_0, sizeof(buffer));
+     adpcm_decode_frames(hle, samples + *segbase, buffer, adpcm_table, u8_3c, u8_3e);
+ 
+     if (u8_3d != 0) {
+-        dma_cat8(hle, buffer, voice_ptr + VOICE_CATSRC_1);
++        dma_cat8(hle, buffer, voice_ptr + VOICE_CATSRC_1, sizeof(buffer));
+         adpcm_decode_frames(hle, samples, buffer, adpcm_table, u8_3d, u8_3f);
+     }
+ }
+@@ -735,6 +747,7 @@ static void mix_voice_samples(struct hle_t* hle, musyx_t *musyx,
+             sample = sample_restart + dist;
+ 
+         /* apply resample filter */
++        VOICE_REQUIRE(sample>=samples && sample<=samples+SAMPLE_BUFFER_SIZE-4,"musyx_resample_extent",voice_ptr);
+         v = clamp_s16(dot4(sample, lut));
+ 
+         for (k = 0; k < 4; ++k) {
+@@ -791,6 +804,7 @@ static void sfx_stage(struct hle_t* hle, mix_sfx_with_main_subframes_t mix_sfx_w
+     cbuffer_length = *dram_u32(hle, sfx_ptr + SFX_CBUFFER_LENGTH);
+ 
+     tap_count      = *dram_u16(hle, sfx_ptr + SFX_TAP_COUNT);
++    VOICE_REQUIRE(tap_count<=8,"musyx_sfx_tap_extent",sfx_ptr);
+ 
+     dram_load_u32(hle, tap_delays, sfx_ptr + SFX_TAP_DELAYS, 8);
+     dram_load_u16(hle, (uint16_t *)tap_gains,  sfx_ptr + SFX_TAP_GAINS,  8);

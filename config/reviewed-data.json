@@ -1,0 +1,5 @@
+[
+  {"section": "main", "vram": "0x8009198c", "size": "0x8", "evidence": "Eight-byte embedded audio table c7d7e3e7f1f3f5f7 between return at 0x80091984 and code at 0x80091994; not an SCD instruction"},
+  {"section": "main", "vram": "0x80091a48", "size": "0x8", "evidence": "Four signed 16-bit audio coefficients 0ccd,2ccd,5333,7fff accessed via PC-relative code at 0x800919bc; not a JAL instruction"},
+  {"section": "main", "vram": "0x8007a010", "size": "0xd0", "evidence": "Embedded RSP boot program with SP DMA register transfers and jumps to 0x840010xx; CPU code resumes at 0x8007a0e0"}
+]

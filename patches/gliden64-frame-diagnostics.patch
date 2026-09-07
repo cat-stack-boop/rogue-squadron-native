@@ -1,0 +1,25 @@
+diff --git a/src/MupenPlusPluginAPI.cpp b/src/MupenPlusPluginAPI.cpp
+index c13060d..4c17f20 100644
+--- a/src/MupenPlusPluginAPI.cpp
++++ b/src/MupenPlusPluginAPI.cpp
+@@ -2,9 +2,20 @@
+ #include "Types.h"
+ #include "mupenplus/GLideN64_mupenplus.h"
+ #include "N64.h"
++#include "gSP.h"
++#include "gDP.h"
++#include "GBI.h"
+ 
+ extern "C" {
+ 
++EXPORT void CALL RogueDebugFrame(unsigned int* values)
++{
++    values[0]=gSP.tri_num;
++    values[1]=GBI.getMicrocodeType();
++    values[2]=gDP.colorImage.address;
++    values[3]=gDP.colorImage.width;
++}
++
+ EXPORT int CALL RomOpen(void)
+ {
+ 	if (rdram_size != nullptr)

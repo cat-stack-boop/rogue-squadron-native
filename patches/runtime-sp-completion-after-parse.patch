@@ -1,0 +1,238 @@
+diff --git a/ultramodern/include/ultramodern/events.hpp b/ultramodern/include/ultramodern/events.hpp
+index dbb2ea5..8e6b673 100644
+--- a/ultramodern/include/ultramodern/events.hpp
++++ b/ultramodern/include/ultramodern/events.hpp
+@@ -2,6 +2,7 @@
+ #define __EVENTS_HPP__
+ 
+ namespace ultramodern {
++    void send_ai_message();
+     namespace events {
+         struct callbacks_t {
+             using vi_callback_t = void();
+diff --git a/ultramodern/src/events.cpp b/ultramodern/src/events.cpp
+index 17d7a47..d52e7d7 100644
+--- a/ultramodern/src/events.cpp
++++ b/ultramodern/src/events.cpp
+@@ -3,11 +3,21 @@
+ #include <chrono>
+ #include <cinttypes>
+ #include <variant>
++#include <optional>
+ #include <unordered_map>
+ #include <utility>
+ #include <mutex>
+ #include <queue>
+ #include <cstring>
++#include <cstdlib>
++
++static bool native_task_trace() {
++    static const bool enabled=[] {
++        const char* value=std::getenv("ROGUE_DIAGNOSTICS");
++        return value && std::strcmp(value,"1")==0;
++    }();
++    return enabled;
++}
+ 
+ #include "blockingconcurrentqueue.h"
+ 
+@@ -78,6 +88,11 @@ static struct {
+             }
+ 
+             const OSViCommonRegs* common_regs = &next_mode->comRegs;
++            // Interlaced Rogue Squadron modes alternate fields each retrace.
++            // The game and renderer read the low CURRENT_LINE bit to select the
++            // corresponding origin/field parameters.
++            field = (next_state->control & 0x40) ? (field ^ 1) : 0;
++            regs.VI_V_CURRENT_LINE_REG = field;
+             const OSViFieldRegs* field_regs = &next_mode->fldRegs[field];
+             PTR(void) framebuffer = osVirtualToPhysical(next_state->framebuffer);
+             PTR(void) origin = framebuffer + field_regs->origin;
+@@ -138,7 +153,7 @@ static struct {
+     std::mutex message_mutex;
+     uint8_t* rdram;
+     moodycamel::BlockingConcurrentQueue<Action> action_queue{};
+-    moodycamel::BlockingConcurrentQueue<OSTask*> sp_task_queue{};
++    moodycamel::BlockingConcurrentQueue<std::optional<OSTask>> sp_task_queue{};
+     moodycamel::ConcurrentQueue<OSThread*> deleted_threads{};
+ } events_context{};
+ 
+@@ -234,7 +249,7 @@ void vi_thread_func() {
+         // Update VI registers and swap VI modes.
+         events_context.vi.update_vi();
+ 
+-        // If the game has started, handle sending VI and AI events.
++        // AI completion follows native audio DMA buffers, independently of VI.
+         if (ultramodern::is_game_started()) {
+             remaining_retraces--;
+             
+@@ -248,10 +263,6 @@ void vi_thread_func() {
+                 }
+                 remaining_retraces = cur_state->retrace_count;
+             }
+-            if (events_context.ai.mq != NULLPTR) {
+-                // Send a message to the VI queue, and do not set it to be requeued if the queue was full for the same reason as the VI message above.
+-                ultramodern::enqueue_external_message_src(events_context.ai.mq, events_context.ai.msg, false, ultramodern::EventMessageSource::Ai);
+-            }
+         }
+ 
+         if (events_callbacks.vi_callback != nullptr) {
+@@ -281,14 +292,14 @@ void task_thread_func(uint8_t* rdram, moodycamel::LightweightSemaphore* thread_r
+ 
+     while (true) {
+         // Wait until an RSP task has been sent
+-        OSTask* task;
++        std::optional<OSTask> task;
+         events_context.sp_task_queue.wait_dequeue(task);
+ 
+-        if (task == nullptr) {
++        if (!task) {
+             return;
+         }
+ 
+-        if (!ultramodern::rsp::run_task(PASS_RDRAM task)) {
++        if (!ultramodern::rsp::run_task(PASS_RDRAM &*task)) {
+             fprintf(stderr, "Failed to execute task type: %" PRIu32 "\n", task->t.type);
+             ULTRAMODERN_QUICK_EXIT();
+         }
+@@ -364,11 +375,9 @@ void gfx_thread_func(uint8_t* rdram, moodycamel::LightweightSemaphore* thread_re
+         if (events_context.action_queue.wait_dequeue_timed(action, 1ms)) {
+             // Determine the action type and act on it
+             if (const auto* task_action = std::get_if<SpTaskAction>(&action)) {
+-                // Tell the game that the RSP completed instantly. This will allow it to queue other task types, but it won't
+-                // start another graphics task until the RDP is also complete. Games usually preserve the RSP inputs until the RDP
+-                // is finished as well, so sending this early shouldn't be an issue in most cases.
+-                // If this causes issues then the logic can be replaced with responding to yield requests.
+-                sp_complete();
++                if(native_task_trace())fprintf(stderr,"Native event queue: received GFX task type=%u data=%08x\n",task_action->task.t.type,(uint32_t)task_action->task.t.data_ptr);
++                // Rogue Squadron's native HLE must consume the task before the
++                // game can reuse its RSP input buffers or schedule another task.
+                 ultramodern::measure_input_latency();
+ 
+                 PTR(u64) displaylist = task_action->task.t.data_ptr;
+@@ -378,6 +387,7 @@ void gfx_thread_func(uint8_t* rdram, moodycamel::LightweightSemaphore* thread_re
+                 renderer_context->send_dl(&task_action->task);
+                 [[maybe_unused]] auto renderer_end = std::chrono::high_resolution_clock::now();
+ 
++                sp_complete();
+                 dp_complete();
+                 // TODO hook the parsed event up to the actual parsing point when a callback is added to RT64.
+                 ultramodern::extensions::on_displaylist_parsed(displaylist);
+@@ -469,6 +479,9 @@ extern "C" void osViSetMode(RDRAM_ARG PTR(OSViMode) mode_) {
+     OSViMode* mode = TO_PTR(OSViMode, mode_);
+     ViState* next_state = events_context.vi.get_next_state();
+     next_state->mode = mode;
++    // The cartridge's osViSetMode sets state to MODE (1), clearing prior
++    // BLACK/REPEATLINE flags. Preserving BLACK here hides Rogue Squadron's output.
++    next_state->state = 1;
+     next_state->control = next_state->mode->comRegs.ctrl;
+ }
+ 
+@@ -564,14 +577,27 @@ extern "C" PTR(void) osViGetCurrentFramebuffer() {
+ 
+ void ultramodern::submit_rsp_task(RDRAM_ARG PTR(OSTask) task_) {
+     OSTask* task = TO_PTR(OSTask, task_);
++    if(native_task_trace())fprintf(stderr,"Native event queue: submit ptr=%08x type=%u data=%08x\n",(uint32_t)task_,task->t.type,(uint32_t)task->t.data_ptr);
+ 
+     // Send gfx tasks to the graphics action queue
+     if (task->t.type == M_GFXTASK) {
+-        events_context.action_queue.enqueue(SpTaskAction{ *task });
++        bool queued=events_context.action_queue.enqueue(SpTaskAction{ *task });
++        if(native_task_trace())fprintf(stderr,"Native event queue: graphics enqueue=%d\n",queued);
++    }
++    // Rogue's native mixer must finish reading its shared RDRAM payload before
++    // the game can reuse the audio heap during a scene transition. A copied
++    // header alone does not own the pointed-to descriptors/sample buffers.
++    else if (task->t.type == M_AUDTASK) {
++        const OSTask snapshot=*task;
++        if (!ultramodern::rsp::run_task(PASS_RDRAM &snapshot)) {
++            fprintf(stderr,"Failed to execute native audio task\n");
++            ULTRAMODERN_QUICK_EXIT();
++        }
++        sp_complete();
+     }
+-    // Set all other tasks as the RSP task
++    // Other custom tasks keep the worker queue.
+     else {
+-        events_context.sp_task_queue.enqueue(task);
++        events_context.sp_task_queue.enqueue(*task);
+     }
+ }
+ 
+@@ -579,6 +605,12 @@ void ultramodern::send_si_message() {
+     ultramodern::enqueue_external_message_src(events_context.si.mq, events_context.si.msg, false, ultramodern::EventMessageSource::Si);
+ }
+ 
++void ultramodern::send_ai_message() {
++    std::lock_guard lock{events_context.message_mutex};
++    if(events_context.ai.mq!=NULLPTR)
++        ultramodern::enqueue_external_message_src(events_context.ai.mq,events_context.ai.msg,false,ultramodern::EventMessageSource::Ai);
++}
++
+ void ultramodern::init_events(RDRAM_ARG ultramodern::renderer::WindowHandle window_handle) {
+     moodycamel::LightweightSemaphore gfx_thread_ready;
+     moodycamel::LightweightSemaphore task_thread_ready;
+@@ -627,6 +659,6 @@ void ultramodern::join_event_threads() {
+     events_context.vi.thread.join();
+ 
+     // Send a null RSP task to indicate that the RSP task thread should exit.
+-    events_context.sp_task_queue.enqueue(nullptr);
++    events_context.sp_task_queue.enqueue(std::nullopt);
+     events_context.sp.task_thread.join();
+ }
+diff --git a/ultramodern/src/threadqueue.cpp b/ultramodern/src/threadqueue.cpp
+index f9c0fa1..79f1e26 100644
+--- a/ultramodern/src/threadqueue.cpp
++++ b/ultramodern/src/threadqueue.cpp
+@@ -15,7 +15,7 @@ void ultramodern::thread_queue_insert(RDRAM_ARG PTR(PTR(OSThread)) queue_, PTR(O
+     PTR(OSThread)* cur = queue_to_ptr(PASS_RDRAM queue_);
+     OSThread* toadd = TO_PTR(OSThread, toadd_); 
+     debug_printf("[Thread Queue] Inserting thread %d into queue 0x%08X\n", toadd->id, (uintptr_t)queue_);
+-    while (*cur && TO_PTR(OSThread, *cur)->priority > toadd->priority) {
++    while (*cur && TO_PTR(OSThread, *cur)->priority >= toadd->priority) {
+         cur = &TO_PTR(OSThread, *cur)->next;
+     }
+     toadd->next = (*cur);
+@@ -43,14 +43,13 @@ PTR(OSThread) ultramodern::thread_queue_pop(RDRAM_ARG PTR(PTR(OSThread)) queue_)
+ bool ultramodern::thread_queue_remove(RDRAM_ARG PTR(PTR(OSThread)) queue_, PTR(OSThread) t_) {
+     debug_printf("[Thread Queue] Removing thread %d from queue 0x%08X\n", TO_PTR(OSThread, t_)->id, (uintptr_t)queue_);
+ 
+-    PTR(PTR(OSThread)) cur = queue_;
+-    while (cur != NULLPTR) {
+-        PTR(OSThread)* cur_ptr = queue_to_ptr(PASS_RDRAM queue_);
+-        if (*cur_ptr == t_) {
+-            *cur_ptr = TO_PTR(OSThread, *cur_ptr)->next;
++    PTR(OSThread)* cur = queue_to_ptr(PASS_RDRAM queue_);
++    while (*cur != NULLPTR) {
++        if (*cur == t_) {
++            *cur = TO_PTR(OSThread, *cur)->next;
+             return true;
+         }
+-        cur = TO_PTR(OSThread, *cur_ptr)->next;
++        cur = &TO_PTR(OSThread, *cur)->next;
+     }
+ 
+     return false;
+diff --git a/ultramodern/src/threads.cpp b/ultramodern/src/threads.cpp
+index 6e3ed18..4992b8c 100644
+--- a/ultramodern/src/threads.cpp
++++ b/ultramodern/src/threads.cpp
+@@ -276,10 +276,17 @@ extern "C" void osStopThread(RDRAM_ARG PTR(OSThread) t_) {
+     }
+     // Check if the thread is stopping itself (arg is null or thread_self).
+     if (t_ == thread_self) {
++        TO_PTR(OSThread, t_)->state = OSThreadState::STOPPED;
+         ultramodern::run_next_thread_and_wait(PASS_RDRAM1);
+     }
+     else {
+-        assert(false);
++        OSThread* t = TO_PTR(OSThread, t_);
++        if (t->state != OSThreadState::STOPPED) {
++            if (!ultramodern::thread_queue_remove(PASS_RDRAM t->queue, t_)) {
++                throw std::runtime_error("Stopping a thread that is absent from its queue");
++            }
++            t->state = OSThreadState::STOPPED;
++        }
+     }
+ }
+ 

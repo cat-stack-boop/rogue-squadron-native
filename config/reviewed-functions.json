@@ -1,0 +1,31 @@
+{
+  "main": [
+    {"vram": "0x8008dfac", "size": "0x38", "evidence": "Audio transition helper reached after confirming a new pilot; preceding return at 0x8008dfa4, own 0x18 frame and return/delay at 0x8008dfdc/0x8008dfe0 before MusyX microcode"},
+    {"vram": "0x80014260", "size": "0x304", "evidence": "VI worker ends before separately spawned SP worker at 0x80014564"},
+    {"vram": "0x80014564", "size": "0x398", "evidence": "Actual osCreateThread target observed during native startup; new 0x40 stack frame and SP event queue setup"},
+    {"vram": "0x8007e280", "size": "0x214", "evidence": "Actual audio worker entry from osCreateThread; new 0x40 frame after jr ra at 0x8007e278; returns at 0x8007e48c"},
+    {"vram": "0x800352e8", "size": "0x28", "evidence": "Small wrapper returns at 0x80035300 with stack restore before boot-config game-loop entry"},
+    {"vram": "0x80035310", "size": "0x5dc", "evidence": "Boot configuration's original game-loop callback observed at native startup; explicit menu overlay load, infinite main loop through 0x800358e8"},
+    {"vram": "0x80080604", "size": "0x4e0", "evidence": "Actual audio-frame callback reached from native startup, after return at 0x800805fc; new stack frame and return at 0x80080adc"},
+    {"vram": "0x80016ba0", "size": "0x38", "evidence": "Actual audio task submission callback; new 0x18 frame, message type 2, return at 0x80016bd0"},
+    {"vram": "0x80063b84", "size": "0x54", "evidence": "Original save error/format decision callback reached after blank EEPROM read; returns through 0x80063bd4"},
+    {"vram": "0x80023ea0", "size": "0x24", "evidence": "zlib allocator callback reached during original asset decompression; forwards items and size to 0x800059ac"},
+    {"vram": "0x80023ec4", "size": "0x20", "evidence": "Adjacent zlib free callback forwards allocation to 0x8000598c; return at 0x80023edc"},
+    {"vram": "0x80023cb8", "size": "0x2c", "evidence": "Original inflate-table pool callback reached during decompression; returns pool base plus decremented entry count times eight"},
+    {"vram": "0x8002b6ac", "size": "0x34", "evidence": "sprintf output callback passed to _Printf at 0x8002b680; original memcpy sink returns buffer plus copied size"},
+    {"vram": "0x80079fbc", "size": "0x54", "evidence": "CPU text-layout callback ends at jr ra 0x8007a000 and delay slot; following 0x8007a010 is RSP boot microcode, not part of this function"},
+    {"vram": "0x8003bab4", "size": "0x4c0", "evidence": "Original cinematic entity callback reached after overlay 3 load; 0x50 stack frame and return before next function at 0x8003bf74"},
+    {"vram": "0x80053510", "size": "0x920", "evidence": "Original cinematic entity callback observed in native execution; 0xe0 frame restored at 0x80053e28, before next function at 0x80053e30"},
+    {"vram": "0x8008f578", "size": "0x300", "evidence": "Original streamed-audio callback observed during cinematic loading; 0x50 frame restored at 0x8008f874 before next function at 0x8008f878"},
+    {"vram": "0x80095030", "size": "0x20", "separate_text": true, "evidence": "Executable audio cache/cursor helper embedded among data; increments and returns the allocation cursor, so it cannot be replaced with a no-op"},
+    {"vram": "0x8006a238", "size": "0x490", "evidence": "Original cinematic entity callback reached after 37 seconds of native execution; 0x58 frame restored before next function at 0x8006a6c8"},
+    {"vram": "0x80036498", "size": "0x108", "evidence": "Stack frame 0x28; jr ra at 0x80036598, stack restored in delay slot"},
+    {"vram": "0x800365a0", "size": "0x514", "evidence": "Stack frame 0x158; forward control flow through 0x80036a88; jr ra at 0x80036aac"},
+    {"vram": "0x80036ab4", "evidence": "New stack frame 0x48 immediately after prior return delay slot"},
+    {"vram": "0x80091e4c", "size": "0x54", "evidence": "Shared audio helper ends at jr ra 0x80091e98 with andi delay slot; subsequent region is data"}
+  ],
+  "menu": [
+    {"vram": "0x800a4954", "size": "0x2d8", "evidence": "Original menu callback reached after cinematic completion; 0x710 frame restored at 0x800a4c28"},
+    {"vram": "0x800bc620", "size": "0x500", "evidence": "Actual main-to-menu dispatcher call after loading overlay 2; new 0x38 stack frame and return at 0x800bcb18"}
+  ]
+}

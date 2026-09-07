@@ -1,0 +1,41 @@
+diff --git a/src/config.cpp b/src/config.cpp
+index 1066aff..e36d474 100644
+--- a/src/config.cpp
++++ b/src/config.cpp
+@@ -297,6 +297,7 @@ N64Recomp::Config::Config(const char* path) {
+ 
+         // Input section (required)
+         const auto input_data = config_data["input"];
++        use_lookup_for_all_function_calls = input_data["use_lookup_for_all_function_calls"].value_or(false);
+         const auto entrypoint_data = input_data["entrypoint"];
+ 
+         if (entrypoint_data) {
+@@ -832,4 +833,3 @@ bool N64Recomp::Context::read_data_reference_syms(const std::filesystem::path& d
+ 
+     return true;
+ }
+-
+diff --git a/src/config.h b/src/config.h
+index 7d6db23..7e6bdae 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -40,6 +40,7 @@ namespace N64Recomp {
+         int32_t functions_per_output_file;
+         bool has_entrypoint;
+         bool uses_mips3_float_mode;
++        bool use_lookup_for_all_function_calls = false;
+         bool single_file_output;
+         bool use_absolute_symbols;
+         bool unpaired_lo16_warnings;
+diff --git a/src/main.cpp b/src/main.cpp
+index 669c4a1..c34d7e5 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -491,6 +491,7 @@ int main(int argc, char** argv) {
+ 
+     fmt::print("Function count: {}\n", context.functions.size());
+ 
++    context.use_lookup_for_all_function_calls = config.use_lookup_for_all_function_calls;
+     std::filesystem::create_directories(config.output_func_path);
+ 
+     std::ofstream func_header_file{ config.output_func_path / "funcs.h" };

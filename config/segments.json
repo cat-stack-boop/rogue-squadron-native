@@ -1,0 +1,12 @@
+{
+  "rom_sha256": "4813551d01d3a3474df3a51f84c31059cd2a9d1eeae7885dda51a88ee6b9f88d",
+  "evidence": "Revision 1 loadOverlay at 0x800012d0, startup at 0x80001e90, and discovered archive header",
+  "main_bss": {"vram": "0x800fedf0", "size": "0x46fa0"},
+  "archive": "0x131ea0",
+  "sections": [
+    {"name": "main", "rom": "0x1000", "vram": "0x80000400", "size": "0x95ce0", "analysis_start": "0x1ed0", "analysis_end": "0x92aa0"},
+    {"name": "mission", "rom": "0x96ce0", "vram": "0x800960e0", "size": "0x671e0", "bss_size": "0x1b30", "analysis_start": "0x9ba20"},
+    {"name": "menu", "rom": "0xfdec0", "vram": "0x800960e0", "size": "0x287a0", "bss_size": "0x2f20", "analysis_start": "0x1020e0"},
+    {"name": "cinematic", "rom": "0x126660", "vram": "0x800960e0", "size": "0xb840", "bss_size": "0x15b0", "analysis_start": "0x1272d0"}
+  ]
+}
